@@ -1,0 +1,30 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "agent-shield",
+	"main": "./worker/index.ts",
+	"compatibility_date": "2026-05-22",
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	"assets": {
+		"directory": "dist/client",
+		"not_found_handling": "none",
+		"binding": "ASSETS"
+	},
+	"cache": {
+		"enabled": true
+	},
+	"vars": {
+		"GROQ_MODEL": "llama-3.3-70b-versatile"
+	},
+	"observability": {
+		"enabled": true
+	},
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "agent-shield-db",
+			"database_id": "a9e6979a-97c3-404e-baf9-77040968e450"
+		}
+	]
+}
