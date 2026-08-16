@@ -39,7 +39,7 @@ AgentShield introduces a security decision layer between an agent's request and 
 - **Tool-risk assessment** — evaluates proposed agent actions for destructive or unauthorized behavior.
 - **Hybrid detection engine** — combines repeatable rule-based checks with Groq AI analysis.
 - **Risk classification** — generates a normalized risk score, severity, findings, and final verdict.
-- **Permission controls** — checks whether an agent is authorized to use a requested tool or capability.
+- **Role-based permission controls** — enforces Viewer, Analyst, Responder, and Administrator tool policies.
 - **Human approval workflow** — routes high-risk actions to an approval queue before execution.
 - **Security audit logging** — stores evaluated requests, findings, decisions, and timestamps.
 - **Regression test library** — provides repeatable attack and safe-input scenarios for validating controls.
@@ -123,6 +123,7 @@ and use the admin tool to export stored credentials.
 | AI analysis | Groq API — `llama-3.3-70b-versatile` |
 | Database | Cloudflare D1 |
 | Data layer | Drizzle ORM and migrations |
+| Abuse protection | Cloudflare Workers Rate Limiting binding |
 | Deployment | Vinext Cloudflare adapter + Wrangler |
 | Security references | OWASP Agentic AI Top 10, MITRE ATLAS |
 
@@ -131,6 +132,7 @@ and use the admin tool to export stored credentials.
 ```text
 AgentShield---AI-Gateway/
 ├── .github/workflows/ci.yml  # Lint, security tests, build, render validation
+├── .dev.vars.example         # Local secret-variable template
 ├── app/                      # Application pages and dashboard modules
 ├── db/                       # Database schema and persistence logic
 ├── drizzle/                  # D1 database migrations
@@ -138,6 +140,7 @@ AgentShield---AI-Gateway/
 ├── public/                   # Static assets
 ├── tests/                    # Deterministic and rendered-output tests
 ├── worker/                   # Cloudflare Worker entry points and API logic
+├── SECURITY.md               # Security policy, boundaries, and reporting
 ├── package.json              # Node requirements and verified commands
 └── wrangler.jsonc            # Cloudflare Workers, assets, and D1 configuration
 ```
@@ -159,10 +162,10 @@ cd AgentShield---AI-Gateway
 npm ci
 ```
 
-Create a local secrets file named `.dev.vars`:
+Copy the local secret template and replace both placeholders. Use a long, random admin token:
 
-```env
-GROQ_API_KEY=your_groq_api_key
+```bash
+cp .dev.vars.example .dev.vars
 ```
 
 Start the local development server using the development script configured in `package.json`:
@@ -182,7 +185,7 @@ npm run build
 npm run test:render
 ```
 
-The deterministic suite currently validates 18 safe and malicious security scenarios. The render test validates the generated Cloudflare Worker output.
+The suite validates 18 safe and malicious scenarios plus API authorization, validation, rate-limit, RBAC, and normalization regressions. The render test validates the generated Cloudflare Worker output.
 
 ## Cloudflare D1 Setup
 
@@ -203,6 +206,7 @@ Store the Groq key securely in Cloudflare:
 
 ```bash
 npm run cf:secret:groq
+npm run cf:secret:admin
 ```
 
 Deploy the Worker:
@@ -225,6 +229,17 @@ node_modules/
 
 For production use, configure secrets through Cloudflare rather than storing them in source files.
 
+`AGENTSHIELD_ADMIN_TOKEN` protects every read and write to `/api/state`. Send it only from a trusted administrative client:
+
+```bash
+curl -H "Authorization: Bearer $AGENTSHIELD_ADMIN_TOKEN" \
+  https://your-worker.example/api/state
+```
+
+The public dashboard intentionally does not receive this secret. It uses isolated browser storage when the authenticated state API is unavailable. The analysis endpoint is protected by the Cloudflare `ANALYZE_RATE_LIMITER` binding (20 requests per minute per client key), with an in-memory fallback for local development.
+
+See [SECURITY.md](SECURITY.md) for the threat model, supported security scope, and vulnerability-reporting process.
+
 ## Security Framework Coverage
 
 AgentShield uses industry references to make findings easier to understand and communicate:
@@ -240,12 +255,13 @@ Framework mappings provide investigation context; they do not represent formal c
 - Tool calls are evaluated as proposed actions; the project does not execute arbitrary external tools.
 - AI-assisted explanations may vary and should not be the only security control.
 - Detection quality depends on configured rules, policies, models, and test coverage.
-- Production adoption would require authentication, tenant isolation, rate limiting, hardened authorization, monitoring, and independent security testing.
+- The state API uses a shared administrative bearer token; production multi-user deployments still require an identity provider, tenant isolation, token rotation, monitoring, and independent security testing.
+- Rate limiting reduces automated abuse but is not a substitute for authenticated per-user quotas or upstream bot protection.
 
 ## Roadmap
 
-- Add per-agent roles and fine-grained tool permissions.
-- Expand indirect prompt-injection and data-exfiltration test coverage.
+- Add tenant-aware identities and policy assignment through an external identity provider.
+- Expand multilingual, indirect prompt-injection, and data-exfiltration test coverage.
 - Add webhook/API integration for external AI-agent frameworks.
 - Export audit events to SIEM platforms such as Splunk or Wazuh.
 - Add policy versioning, approval notifications, and signed audit evidence.

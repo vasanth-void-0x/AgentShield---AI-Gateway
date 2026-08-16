@@ -1,23 +1,34 @@
 import {
   analyzePrompt,
   combineAnalyses,
+  isAgentRole,
+  isToolOption,
   type Analysis,
+  type AgentRole,
   type Finding,
   type Severity,
   type Verdict,
-} from "../../../lib/security-engine";
+} from "../../../lib/security-engine.ts";
 
 const REQUEST_WINDOW_MS = 60_000;
 const REQUEST_LIMIT = 20;
 const MAX_PROMPT_LENGTH = 2_000;
 const requestWindows = new Map<string, { count: number; resetAt: number }>();
 
+type RateLimitBinding = {
+  limit(input: { key: string }): Promise<{ success: boolean }>;
+};
+
+type RuntimeEnv = {
+  ANALYZE_RATE_LIMITER?: RateLimitBinding;
+};
+
 function clientKey(request: Request) {
-  return request.headers.get("cf-connecting-ip") ?? request.headers.get("x-forwarded-for") ?? "local";
+  const forwarded = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
+  return request.headers.get("cf-connecting-ip") ?? forwarded ?? "local";
 }
 
-function isRateLimited(request: Request) {
-  const key = clientKey(request);
+function localRateLimited(key: string) {
   const now = Date.now();
   const current = requestWindows.get(key);
   if (!current || current.resetAt <= now) {
@@ -26,6 +37,23 @@ function isRateLimited(request: Request) {
   }
   current.count += 1;
   return current.count > REQUEST_LIMIT;
+}
+
+async function isRateLimited(request: Request) {
+  const key = `analyze:${clientKey(request)}`;
+  const env = (globalThis as typeof globalThis & { __AGENTSHIELD_ENV__?: RuntimeEnv }).__AGENTSHIELD_ENV__;
+  if (env?.ANALYZE_RATE_LIMITER) {
+    const result = await env.ANALYZE_RATE_LIMITER.limit({ key });
+    return !result.success;
+  }
+
+  if (requestWindows.size > 5_000) {
+    const now = Date.now();
+    for (const [entryKey, window] of requestWindows) {
+      if (window.resetAt <= now) requestWindows.delete(entryKey);
+    }
+  }
+  return localRateLimited(key);
 }
 
 function clampScore(value: unknown, fallback = 0) {
@@ -64,7 +92,7 @@ function parseAiAnalysis(content: string): Analysis {
   };
 }
 
-async function requestGroq(prompt: string, tool: string, ruleResult: Analysis, apiKey: string, model: string) {
+async function requestGroq(prompt: string, tool: string, role: AgentRole, ruleResult: Analysis, apiKey: string, model: string) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 8_000);
   try {
@@ -88,6 +116,7 @@ async function requestGroq(prompt: string, tool: string, ruleResult: Analysis, a
             content: JSON.stringify({
               untrusted_prompt: prompt,
               requested_tool: tool,
+              agent_role: role,
               deterministic_result: {
                 score: ruleResult.score,
                 verdict: ruleResult.verdict,
@@ -111,25 +140,31 @@ async function requestGroq(prompt: string, tool: string, ruleResult: Analysis, a
 }
 
 export async function POST(request: Request) {
-  if (isRateLimited(request)) {
-    return Response.json({ error: "Too many analysis requests. Try again in one minute." }, { status: 429 });
+  if (await isRateLimited(request)) {
+    return Response.json(
+      { error: "Too many analysis requests. Try again in one minute." },
+      { status: 429, headers: { "Retry-After": "60" } },
+    );
   }
 
-  let payload: { prompt?: string; tool?: string };
+  let payload: { prompt?: string; tool?: string; role?: string };
   try {
-    payload = await request.json() as { prompt?: string; tool?: string };
+    payload = await request.json() as { prompt?: string; tool?: string; role?: string };
   } catch {
     return Response.json({ error: "Invalid JSON request." }, { status: 400 });
   }
 
   const prompt = payload.prompt?.trim() ?? "";
   const tool = payload.tool?.trim() || "none";
+  const role = payload.role?.trim() || "analyst";
   if (!prompt) return Response.json({ error: "Prompt is required." }, { status: 400 });
   if (prompt.length > MAX_PROMPT_LENGTH) {
     return Response.json({ error: `Prompt must be ${MAX_PROMPT_LENGTH} characters or fewer.` }, { status: 400 });
   }
+  if (!isToolOption(tool)) return Response.json({ error: "Unknown tool selection." }, { status: 400 });
+  if (!isAgentRole(role)) return Response.json({ error: "Unknown agent role." }, { status: 400 });
 
-  const ruleResult = analyzePrompt(prompt, tool);
+  const ruleResult = analyzePrompt(prompt, tool, role);
   const apiKey = process.env.GROQ_API_KEY?.trim();
   const model = process.env.GROQ_MODEL?.trim() || "llama-3.3-70b-versatile";
 
@@ -141,7 +176,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const aiResult = await requestGroq(prompt, tool, ruleResult, apiKey, model);
+    const aiResult = await requestGroq(prompt, tool, role, ruleResult, apiKey, model);
     return Response.json({ analysis: combineAnalyses(ruleResult, aiResult, model) });
   } catch {
     return Response.json({
@@ -150,4 +185,3 @@ export async function POST(request: Request) {
     });
   }
 }
-

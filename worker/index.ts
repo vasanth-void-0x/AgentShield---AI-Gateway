@@ -2,8 +2,14 @@
 import handler from "vinext/server/app-router-entry";
 
 interface Env {
-  ASSETS: Fetcher;
-  DB?: D1Database;
+  ASSETS: {
+    fetch(request: Request): Promise<Response> | Response;
+  };
+  DB?: unknown;
+  ANALYZE_RATE_LIMITER?: {
+    limit(input: { key: string }): Promise<{ success: boolean }>;
+  };
+  AGENTSHIELD_ADMIN_TOKEN?: string;
   GROQ_API_KEY?: string;
   GROQ_MODEL?: string;
 }

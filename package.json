@@ -11,14 +11,15 @@
     "preview": "wrangler dev --config dist/server/wrangler.json",
     "deploy": "vinext-cloudflare deploy --config dist/server/wrangler.json",
     "test": "npm run test:engine && npm run build && npm run test:render",
-    "test:engine": "node --experimental-strip-types --test tests/security-engine.test.mjs",
+    "test:engine": "node --experimental-strip-types --test tests/security-engine.test.mjs tests/api-security.test.mjs",
     "test:render": "node --test tests/rendered-html.test.mjs",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
     "db:generate": "drizzle-kit generate",
     "cf:whoami": "wrangler whoami",
     "cf:db:create": "wrangler d1 create agent-shield-db --binding DB --update-config",
     "cf:db:apply": "wrangler d1 execute agent-shield-db --remote --file=drizzle/0000_friendly_beast.sql",
-    "cf:secret:groq": "wrangler secret put GROQ_API_KEY"
+    "cf:secret:groq": "wrangler secret put GROQ_API_KEY",
+    "cf:secret:admin": "wrangler secret put AGENTSHIELD_ADMIN_TOKEN"
   },
   "dependencies": {
     "drizzle-orm": "0.45.2",
