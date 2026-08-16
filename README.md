@@ -7,6 +7,8 @@
 [![Cloudflare D1](https://img.shields.io/badge/Database-Cloudflare_D1-F38020?logo=cloudflare&logoColor=white)](https://developers.cloudflare.com/d1/)
 [![Groq](https://img.shields.io/badge/AI-Groq-F55036)](https://groq.com/)
 [![OWASP](https://img.shields.io/badge/Mapped_to-OWASP_Agentic_Top_10-000000?logo=owasp&logoColor=white)](https://genai.owasp.org/)
+[![AgentShield CI](https://github.com/vasanth-void-0x/AgentShield---AI-Gateway/actions/workflows/ci.yml/badge.svg)](https://github.com/vasanth-void-0x/AgentShield---AI-Gateway/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-22c55e.svg)](LICENSE)
 
 **AgentShield** is a simulation-based security gateway for evaluating AI-agent prompts and tool actions before execution. It combines deterministic security rules with Groq-powered analysis to detect prompt injection, tool misuse, and sensitive-data exposure, then produces an explainable risk score and an `ALLOW`, `REVIEW`, or `BLOCK` decision.
 
@@ -116,34 +118,35 @@ and use the admin tool to export stored credentials.
 
 | Layer | Technology |
 | --- | --- |
-| Web application | Modern JavaScript/TypeScript application |
-| Edge runtime | Cloudflare Workers |
+| Web application | Next.js 16, React 19, TypeScript 5 |
+| Edge runtime | Cloudflare Workers via Vinext |
 | AI analysis | Groq API — `llama-3.3-70b-versatile` |
 | Database | Cloudflare D1 |
-| Data layer | Drizzle-based schema and migrations |
-| Deployment | Wrangler CLI |
+| Data layer | Drizzle ORM and migrations |
+| Deployment | Vinext Cloudflare adapter + Wrangler |
 | Security references | OWASP Agentic AI Top 10, MITRE ATLAS |
 
 ## Project Structure
 
 ```text
-AgentShield-Cloudflare/
-├── app/          # Application pages and dashboard modules
-├── db/           # Database schema and persistence logic
-├── drizzle/      # D1 database migrations
-├── lib/          # Shared security and application utilities
-├── public/       # Static assets
-├── scripts/      # Setup and maintenance scripts
-├── tests/        # Security test scenarios
-├── worker/       # Cloudflare Worker entry points and API logic
-└── wrangler.toml # Cloudflare Workers and D1 configuration
+AgentShield---AI-Gateway/
+├── .github/workflows/ci.yml  # Lint, security tests, build, render validation
+├── app/                      # Application pages and dashboard modules
+├── db/                       # Database schema and persistence logic
+├── drizzle/                  # D1 database migrations
+├── lib/                      # Shared security and application utilities
+├── public/                   # Static assets
+├── tests/                    # Deterministic and rendered-output tests
+├── worker/                   # Cloudflare Worker entry points and API logic
+├── package.json              # Node requirements and verified commands
+└── wrangler.jsonc            # Cloudflare Workers, assets, and D1 configuration
 ```
 
 ## Local Setup
 
 ### Prerequisites
 
-- Node.js 18 or later
+- Node.js 22.13.0 or later (matches `package.json`)
 - npm
 - A Groq API key
 - A Cloudflare account for D1 and Workers deployment
@@ -153,7 +156,7 @@ AgentShield-Cloudflare/
 ```bash
 git clone https://github.com/vasanth-void-0x/AgentShield---AI-Gateway.git
 cd AgentShield---AI-Gateway
-npm install
+npm ci
 ```
 
 Create a local secrets file named `.dev.vars`:
@@ -168,6 +171,19 @@ Start the local development server using the development script configured in `p
 npm run dev
 ```
 
+## Local Validation
+
+Run the same checks used by GitHub Actions:
+
+```bash
+npm run lint
+npm run test:engine
+npm run build
+npm run test:render
+```
+
+The deterministic suite currently validates 18 safe and malicious security scenarios. The render test validates the generated Cloudflare Worker output.
+
 ## Cloudflare D1 Setup
 
 Authenticate Wrangler and create the D1 database:
@@ -177,7 +193,7 @@ npx wrangler login
 npm run cf:db:create
 ```
 
-Copy the generated database identifier into the D1 section of `wrangler.toml`, then apply the schema:
+The `cf:db:create` command updates the D1 binding in `wrangler.jsonc`. Review the generated database identifier, then apply the schema:
 
 ```bash
 npm run cf:db:apply
@@ -186,13 +202,13 @@ npm run cf:db:apply
 Store the Groq key securely in Cloudflare:
 
 ```bash
-npx wrangler secret put GROQ_API_KEY
+npm run cf:secret:groq
 ```
 
 Deploy the Worker:
 
 ```bash
-npx wrangler deploy
+npm run deploy
 ```
 
 ## Security Configuration
@@ -233,7 +249,7 @@ Framework mappings provide investigation context; they do not represent formal c
 - Add webhook/API integration for external AI-agent frameworks.
 - Export audit events to SIEM platforms such as Splunk or Wazuh.
 - Add policy versioning, approval notifications, and signed audit evidence.
-- Add automated security regression tests to CI/CD.
+- Expand CI security coverage with dependency and secret scanning.
 
 ## Screenshots
 
@@ -274,6 +290,10 @@ Every evaluated request is recorded with its source, event, risk score, and fina
 ## Responsible Use
 
 This project is intended for defensive security research, education, and authorized testing. Do not use it to test systems, applications, or data without explicit permission.
+
+## License
+
+Released under the [MIT License](LICENSE).
 
 ## Author
 
