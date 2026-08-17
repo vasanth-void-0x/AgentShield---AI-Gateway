@@ -1,0 +1,27 @@
+{
+  "generatedAt": "2026-08-17T10:53:58.062Z",
+  "methodology": "bounded homepage GET load test against a local production Worker preview",
+  "target": "http://127.0.0.1:8787/",
+  "requests": 100,
+  "concurrency": 10,
+  "warmupRequests": 5,
+  "successfulRequests": 100,
+  "failedRequests": 0,
+  "errorRate": 0,
+  "throughputRequestsPerSecond": 30.04,
+  "latencyMs": {
+    "min": 31.19,
+    "median": 229.79,
+    "p95": 788.39,
+    "p99": 791.79,
+    "max": 800.08
+  },
+  "totalBytes": 1897400,
+  "statusCodes": {
+    "200": 100
+  },
+  "thresholds": {
+    "maxP95Ms": 1000,
+    "maxErrorRate": 0
+  }
+}

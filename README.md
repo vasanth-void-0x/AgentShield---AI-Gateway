@@ -26,9 +26,10 @@ The project demonstrates practical controls for securing agentic AI systems, inc
 | Dependency security | `npm audit` reports 0 known vulnerabilities |
 | Security regression suite | 18 safe and malicious scenarios plus API authorization, validation, RBAC, rate-limit, and normalization checks |
 | Build validation | Lint, production Worker build, and rendered-output test run in GitHub Actions |
-| Performance smoke test | Bounded local production-preview test with JSON evidence and a manually triggered GitHub Actions workflow |
+| Performance smoke test | 100 requests at concurrency 10: 0 failures, 788.39 ms p95, and 30.04 requests/second on a GitHub-hosted runner |
 
-- [Performance methodology and latest evidence](docs/performance/README.md)
+- [Performance methodology and JSON evidence](docs/performance/README.md)
+- [Verified performance workflow run](https://github.com/vasanth-void-0x/AgentShield---AI-Gateway/actions/runs/32022279232)
 - [AgentShield CI workflow](https://github.com/vasanth-void-0x/AgentShield---AI-Gateway/actions/workflows/ci.yml)
 - [Performance smoke-test workflow](https://github.com/vasanth-void-0x/AgentShield---AI-Gateway/actions/workflows/performance.yml)
 
