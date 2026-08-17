@@ -180,6 +180,7 @@ Run the same checks used by GitHub Actions:
 
 ```bash
 npm run lint
+npm run security:audit
 npm run test:engine
 npm run build
 npm run test:render
@@ -265,7 +266,7 @@ Framework mappings provide investigation context; they do not represent formal c
 - Add webhook/API integration for external AI-agent frameworks.
 - Export audit events to SIEM platforms such as Splunk or Wazuh.
 - Add policy versioning, approval notifications, and signed audit evidence.
-- Expand CI security coverage with dependency and secret scanning.
+- Add CodeQL analysis, secret scanning, and signed build provenance.
 
 ## Screenshots
 
