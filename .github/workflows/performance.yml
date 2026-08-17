@@ -1,0 +1,85 @@
+name: AgentShield Performance Smoke Test
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/performance.yml"
+      - "app/**"
+      - "db/**"
+      - "lib/**"
+      - "scripts/load-test.mjs"
+      - "worker/**"
+      - "package.json"
+      - "package-lock.json"
+  workflow_dispatch:
+    inputs:
+      requests:
+        description: Total bounded homepage requests
+        required: false
+        default: "100"
+      concurrency:
+        description: Concurrent requests
+        required: false
+        default: "10"
+
+permissions:
+  contents: read
+
+jobs:
+  performance-smoke-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      LOAD_TEST_URL: http://127.0.0.1:8787/
+      LOAD_TEST_REQUESTS: ${{ inputs.requests || '100' }}
+      LOAD_TEST_CONCURRENCY: ${{ inputs.concurrency || '10' }}
+      LOAD_TEST_OUTPUT: artifacts/performance/latest.json
+      WRANGLER_SEND_METRICS: "false"
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.13.0
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build production Worker
+        run: npm run build
+
+      - name: Start local Worker preview
+        run: |
+          npm run preview -- --local --ip 127.0.0.1 --port 8787 > /tmp/agentshield-preview.log 2>&1 &
+          echo $! > /tmp/agentshield-preview.pid
+          for attempt in {1..30}; do
+            if curl --fail --silent --show-error "$LOAD_TEST_URL" > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/agentshield-preview.log
+          exit 1
+
+      - name: Run bounded load test
+        run: npm run test:load
+
+      - name: Upload performance evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: agentshield-performance-evidence
+          path: artifacts/performance/latest.json
+          if-no-files-found: warn
+
+      - name: Stop local Worker preview
+        if: always()
+        run: |
+          if [ -f /tmp/agentshield-preview.pid ]; then
+            kill "$(cat /tmp/agentshield-preview.pid)" || true
+          fi

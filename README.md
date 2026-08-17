@@ -19,6 +19,19 @@ The project demonstrates practical controls for securing agentic AI systems, inc
 - Application: [agent-shield.iamvasanth2k4.workers.dev](https://agent-shield.iamvasanth2k4.workers.dev/)
 - Repository: [github.com/vasanth-void-0x/AgentShield---AI-Gateway](https://github.com/vasanth-void-0x/AgentShield---AI-Gateway)
 
+## Verified Quality Gates
+
+| Check | Evidence |
+| --- | --- |
+| Dependency security | `npm audit` reports 0 known vulnerabilities |
+| Security regression suite | 18 safe and malicious scenarios plus API authorization, validation, RBAC, rate-limit, and normalization checks |
+| Build validation | Lint, production Worker build, and rendered-output test run in GitHub Actions |
+| Performance smoke test | Bounded local production-preview test with JSON evidence and a manually triggered GitHub Actions workflow |
+
+- [Performance methodology and latest evidence](docs/performance/README.md)
+- [AgentShield CI workflow](https://github.com/vasanth-void-0x/AgentShield---AI-Gateway/actions/workflows/ci.yml)
+- [Performance smoke-test workflow](https://github.com/vasanth-void-0x/AgentShield---AI-Gateway/actions/workflows/performance.yml)
+
 ## Why AgentShield?
 
 AI agents can read untrusted content, call external tools, access sensitive data, and perform high-impact actions. A malicious instruction or over-permissioned tool call can therefore cause real damage.
@@ -268,15 +281,19 @@ Framework mappings provide investigation context; they do not represent formal c
 - Add policy versioning, approval notifications, and signed audit evidence.
 - Add CodeQL analysis, secret scanning, and signed build provenance.
 
+## Demo Walkthrough
+
+[Download the short MP4 walkthrough](docs/demo/agentshield-demo.mp4)
+
+![AgentShield demo walkthrough](docs/demo/agentshield-demo.gif)
+
 ## Screenshots
 
 ### Security Operations Overview
 
-![AgentShield security operations overview](docs/screenshots/overview-dashboard.png)
+The overview dashboard summarizes recent gateway decisions and coverage across agentic AI security controls.
 
 ### Live Security Activity and Framework Coverage
-
-The overview dashboard summarizes recent gateway decisions and coverage across agentic AI security controls.
 
 ![AgentShield live security activity and framework coverage](docs/screenshots/security-activity.png)
 

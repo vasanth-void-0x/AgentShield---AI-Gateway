@@ -13,6 +13,7 @@
     "test": "npm run test:engine && npm run build && npm run test:render",
     "test:engine": "node --experimental-strip-types --test tests/security-engine.test.mjs tests/api-security.test.mjs",
     "test:render": "node --test tests/rendered-html.test.mjs",
+    "test:load": "node scripts/load-test.mjs",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
     "security:audit": "npm audit --audit-level=high",
     "db:generate": "drizzle-kit generate",
