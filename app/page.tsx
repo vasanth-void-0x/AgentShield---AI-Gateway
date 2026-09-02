@@ -273,12 +273,12 @@ export default function Home() {
   }
 
   function exportAudit() {
-    const payload = { exportedAt: new Date().toISOString(), engine: "AgentShield v1.0", events, approvals };
+    const payload = { exportedAt: new Date().toISOString(), engine: "Agent V v1.0", events, approvals };
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement("a");
     anchor.href = url;
-    anchor.download = "agentshield-audit-export.json";
+    anchor.download = "agent-v-audit-export.json";
     anchor.click();
     URL.revokeObjectURL(url);
     setNotice("Audit evidence exported as JSON.");
@@ -292,14 +292,14 @@ export default function Home() {
         <div>
           <div className="eyebrow"><span className="pulse-dot" /> Defensive gateway active</div>
           <h1>Secure every agent action before execution.</h1>
-          <p>AgentShield combines deterministic policy controls with Groq-powered contextual analysis, least-privilege tool gates and human approval.</p>
+          <p>Agent V combines deterministic policy controls with Groq-powered contextual analysis, least-privilege tool gates and human approval.</p>
           <div className="hero-actions">
             <button className="button primary" onClick={() => setView("lab")}>Open Prompt Lab</button>
             <button className="button secondary" onClick={() => setView("tests")}>Run Security Tests</button>
           </div>
         </div>
-        <div className="shield-visual" aria-label="AgentShield protection status">
-          <div className="shield-core"><span>AS</span></div>
+        <div className="shield-visual" aria-label="Agent V protection status">
+          <div className="shield-core"><span>AV</span></div>
           <div className="orbit orbit-one"><i /></div>
           <div className="orbit orbit-two"><i /></div>
           <div className="shield-status"><b>{metrics.coverage}%</b><span>ASI coverage</span></div>
@@ -450,16 +450,16 @@ export default function Home() {
   return (
     <main className="app-shell">
       <aside className="sidebar">
-        <div className="brand"><div className="brand-mark">AS</div><div><b>AgentShield</b><span>AI Security Gateway</span></div></div>
+        <div className="brand"><div className="brand-mark">AV</div><div><b>Agent V</b><span>Agentic AI Security Gateway</span></div></div>
         <nav aria-label="Main navigation">
           {NAV_ITEMS.map((item) => <button key={item.id} className={view === item.id ? "active" : ""} onClick={() => setView(item.id)}><span>{item.short}</span>{item.label}{item.id === "approvals" && metrics.pending > 0 ? <i>{metrics.pending}</i> : null}</button>)}
         </nav>
-        <div className="sidebar-footer"><div className="engine-state"><span className="pulse-dot" /><div><b>Security engine online</b><span>{engineLabel}</span></div></div><p>AgentShield v1.0 · Defensive lab</p></div>
+        <div className="sidebar-footer"><div className="engine-state"><span className="pulse-dot" /><div><b>Security engine online</b><span>{engineLabel}</span></div></div><p>Agent V v1.0 · Defensive lab</p></div>
       </aside>
 
       <section className="main-area">
         <header className="topbar">
-          <div><span className="mobile-brand">AS</span><div><p>Security Operations</p><h2>{NAV_ITEMS.find((item) => item.id === view)?.label}</h2></div></div>
+          <div><span className="mobile-brand">AV</span><div><p>Security Operations</p><h2>{NAV_ITEMS.find((item) => item.id === view)?.label}</h2></div></div>
           <div className="topbar-actions"><span className={`simulation-pill storage-${persistenceMode}`}>{persistenceMode === "database" ? "D1 Persisted" : persistenceMode === "browser" ? "Browser fallback" : "Storage check"}</span><span className="simulation-pill">Defensive Mode</span><button className="avatar" aria-label="Vasanth Kumar profile">VK</button></div>
         </header>
         <div className="mobile-nav">{NAV_ITEMS.map((item) => <button key={item.id} className={view === item.id ? "active" : ""} onClick={() => setView(item.id)}>{item.short}</button>)}</div>
