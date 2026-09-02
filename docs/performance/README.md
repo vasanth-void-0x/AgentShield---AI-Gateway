@@ -1,6 +1,6 @@
 # Performance Validation
 
-AgentShield includes a dependency-free, bounded load-test harness for the
+Agent V includes a dependency-free, bounded load-test harness for the
 rendered homepage. The test targets a local production Cloudflare Worker
 preview so CI never generates artificial traffic against the public demo.
 
@@ -27,7 +27,7 @@ All values are configurable through the environment variables documented in
 
 ## Evidence
 
-The **AgentShield Performance Smoke Test** GitHub Actions workflow repeats the
+The **Agent V Performance Smoke Test** GitHub Actions workflow repeats the
 production-build test after relevant changes and can also be triggered
 manually. Each run uploads its JSON output as a workflow artifact so the result
 is tied to a specific commit and execution environment.
