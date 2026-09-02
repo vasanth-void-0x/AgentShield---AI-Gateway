@@ -1,4 +1,4 @@
-/** Cloudflare Worker entry point for AgentShield. */
+/** Cloudflare Worker entry point for Agent V. */
 import handler from "vinext/server/app-router-entry";
 
 interface Env {
