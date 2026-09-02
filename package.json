@@ -1,5 +1,5 @@
 {
-  "name": "agent-shield",
+  "name": "agent-v",
   "version": "1.0.0",
   "private": true,
   "engines": {
@@ -49,7 +49,7 @@
     "wrangler": "4.123.0"
   },
   "type": "module",
-  "displayName": "AgentShield",
+  "displayName": "Agent V",
   "overrides": {
     "@esbuild-kit/core-utils": {
       "esbuild": "0.25.12"
