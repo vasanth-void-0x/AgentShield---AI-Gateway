@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AgentShield",
-  description: "An interactive, defensive agentic AI security gateway lab.",
+  title: "Agent V — Agentic AI Security Gateway",
+  description: "Agent V is an interactive defensive gateway for evaluating agentic AI prompts and proposed tool actions before execution.",
   other: {
     "codex-preview": "development",
   },
