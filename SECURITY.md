@@ -1,6 +1,6 @@
 # Security Policy
 
-AgentShield is a defensive portfolio project that demonstrates security controls for proposed AI-agent actions. It does not execute the submitted tool request.
+Agent V is a defensive portfolio project that demonstrates security controls for proposed AI-agent actions. It does not execute the submitted tool request.
 
 ## Supported Version
 
@@ -30,7 +30,7 @@ Do not include real credentials, personal data, or destructive payloads. Please 
 
 The current controls address direct prompt injection, credential or personal-data requests, unsafe tool use, approval bypass, persistent-memory poisoning, unsafe inter-agent delegation, resource-exhaustion prompts, untrusted dependencies, and common obfuscation bypasses.
 
-AgentShield is not a production-certified firewall, malware sandbox, identity provider, or tenant-isolation layer. Rule and model decisions can produce false positives or false negatives. A production deployment should add managed identity, per-user authorization, secret rotation, centralized monitoring, upstream abuse controls, dependency scanning, and independent penetration testing.
+Agent V is not a production-certified firewall, malware sandbox, identity provider, or tenant-isolation layer. Rule and model decisions can produce false positives or false negatives. A production deployment should add managed identity, per-user authorization, secret rotation, centralized monitoring, upstream abuse controls, dependency scanning, and independent penetration testing.
 
 ## Safe Research
 
