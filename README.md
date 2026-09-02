@@ -1,4 +1,4 @@
-# AgentShield — Agentic AI Security Gateway
+# Agent V — Agentic AI Security Gateway
 
 > Secure every agent action before execution.
 
@@ -7,10 +7,10 @@
 [![Cloudflare D1](https://img.shields.io/badge/Database-Cloudflare_D1-F38020?logo=cloudflare&logoColor=white)](https://developers.cloudflare.com/d1/)
 [![Groq](https://img.shields.io/badge/AI-Groq-F55036)](https://groq.com/)
 [![OWASP](https://img.shields.io/badge/Mapped_to-OWASP_Agentic_Top_10-000000?logo=owasp&logoColor=white)](https://genai.owasp.org/)
-[![AgentShield CI](https://github.com/vasanth-void-0x/AgentShield---AI-Gateway/actions/workflows/ci.yml/badge.svg)](https://github.com/vasanth-void-0x/AgentShield---AI-Gateway/actions/workflows/ci.yml)
+[![Agent V CI](https://github.com/vasanth-void-0x/AgentShield---AI-Gateway/actions/workflows/ci.yml/badge.svg)](https://github.com/vasanth-void-0x/AgentShield---AI-Gateway/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-22c55e.svg)](LICENSE)
 
-**AgentShield** is a simulation-based security gateway for evaluating AI-agent prompts and tool actions before execution. It combines deterministic security rules with Groq-powered analysis to detect prompt injection, tool misuse, and sensitive-data exposure, then produces an explainable risk score and an `ALLOW`, `REVIEW`, or `BLOCK` decision.
+**Agent V** is a simulation-based security gateway for evaluating AI-agent prompts and tool actions before execution. It combines deterministic security rules with Groq-powered analysis to detect prompt injection, tool misuse, and sensitive-data exposure, then produces an explainable risk score and an `ALLOW`, `REVIEW`, or `BLOCK` decision.
 
 The project demonstrates practical controls for securing agentic AI systems, including permission enforcement, human approval checkpoints, repeatable security tests, and traceable audit logs.
 
@@ -30,14 +30,14 @@ The project demonstrates practical controls for securing agentic AI systems, inc
 
 - [Performance methodology and JSON evidence](docs/performance/README.md)
 - [Verified performance workflow run](https://github.com/vasanth-void-0x/AgentShield---AI-Gateway/actions/runs/32022279232)
-- [AgentShield CI workflow](https://github.com/vasanth-void-0x/AgentShield---AI-Gateway/actions/workflows/ci.yml)
+- [Agent V CI workflow](https://github.com/vasanth-void-0x/AgentShield---AI-Gateway/actions/workflows/ci.yml)
 - [Performance smoke-test workflow](https://github.com/vasanth-void-0x/AgentShield---AI-Gateway/actions/workflows/performance.yml)
 
-## Why AgentShield?
+## Why Agent V?
 
 AI agents can read untrusted content, call external tools, access sensitive data, and perform high-impact actions. A malicious instruction or over-permissioned tool call can therefore cause real damage.
 
-AgentShield introduces a security decision layer between an agent's request and its execution:
+Agent V introduces a security decision layer between an agent's request and its execution:
 
 1. Inspect the prompt and proposed action.
 2. Detect known attack patterns and policy violations.
@@ -69,11 +69,11 @@ AgentShield introduces a security decision layer between an agent's request and 
 | **Approvals** | Reviews high-risk actions that require a human decision. |
 | **Audit Log** | Provides a traceable history of assessments, findings, and outcomes. |
 
-## AgentShield Workflow
+## Agent V Workflow
 
 ```mermaid
 flowchart TD
-    A[User Prompt or Proposed Agent Action] --> B[AgentShield Gateway]
+    A[User Prompt or Proposed Agent Action] --> B[Agent V Gateway]
     B --> C[Normalize Input and Tool Context]
     C --> D[Deterministic Security Rules]
     C --> E[Groq Contextual Analysis]
@@ -257,7 +257,7 @@ See [SECURITY.md](SECURITY.md) for the threat model, supported security scope, a
 
 ## Security Framework Coverage
 
-AgentShield uses industry references to make findings easier to understand and communicate:
+Agent V uses industry references to make findings easier to understand and communicate:
 
 - **OWASP Agentic AI Top 10** — agent goal hijacking, tool misuse, excessive permissions, and sensitive-data risks.
 - **MITRE ATLAS** — adversarial AI behaviors and techniques related to prompt manipulation and unsafe model interaction.
@@ -266,7 +266,7 @@ Framework mappings provide investigation context; they do not represent formal c
 
 ## Current Scope and Limitations
 
-- AgentShield is a portfolio MVP and security-control simulation, not a production-certified AI firewall.
+- Agent V is a portfolio MVP and security-control simulation, not a production-certified AI firewall.
 - Tool calls are evaluated as proposed actions; the project does not execute arbitrary external tools.
 - AI-assisted explanations may vary and should not be the only security control.
 - Detection quality depends on configured rules, policies, models, and test coverage.
@@ -286,7 +286,7 @@ Framework mappings provide investigation context; they do not represent formal c
 
 [Download the short MP4 walkthrough](docs/demo/agentshield-demo.mp4)
 
-![AgentShield demo walkthrough](docs/demo/agentshield-demo.gif)
+![Agent V demo walkthrough](docs/demo/agentshield-demo.gif)
 
 ## Screenshots
 
@@ -296,31 +296,31 @@ The overview dashboard summarizes recent gateway decisions and coverage across a
 
 ### Live Security Activity and Framework Coverage
 
-![AgentShield live security activity and framework coverage](docs/screenshots/security-activity.png)
+![Agent V live security activity and framework coverage](docs/screenshots/security-activity.png)
 
 ### Prompt Injection Blocked
 
 The Prompt Lab combines rule-based detection and Groq analysis to block a goal-hijacking request before the proposed local-file action can execute.
 
-![AgentShield Prompt Lab blocking a prompt-injection attempt](docs/screenshots/prompt-lab-block.png)
+![Agent V Prompt Lab blocking a prompt-injection attempt](docs/screenshots/prompt-lab-block.png)
 
 ### Repeatable Security Test Library
 
 The built-in regression suite validates malicious and benign scenarios across OWASP Agentic Security Initiative categories and MITRE ATLAS mappings.
 
-![AgentShield repeatable security test library](docs/screenshots/test-library.png)
+![Agent V repeatable security test library](docs/screenshots/test-library.png)
 
 ### Human-in-the-Loop Approval Queue
 
 Medium-risk or high-impact actions can be paused for an explicit reviewer decision before execution.
 
-![AgentShield human-in-the-loop approval queue](docs/screenshots/approval-queue.png)
+![Agent V human-in-the-loop approval queue](docs/screenshots/approval-queue.png)
 
 ### Security Audit Log
 
 Every evaluated request is recorded with its source, event, risk score, and final decision for investigation and accountability.
 
-![AgentShield security audit log](docs/screenshots/audit-log.png)
+![Agent V security audit log](docs/screenshots/audit-log.png)
 
 ## Responsible Use
 
